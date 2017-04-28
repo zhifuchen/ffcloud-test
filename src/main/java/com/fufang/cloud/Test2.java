@@ -14,7 +14,14 @@ public class Test2 {
         System.out.println("print");
         
     }
-    private void print2() {
-        System.out.println("print2");
+    
+    private void print3() {
+        System.out.println(3);
     }
+    
+    private void print4() {
+        System.out.println("4");
+    }
+
+
 }
