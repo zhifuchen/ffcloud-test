@@ -14,4 +14,7 @@ public class Test2 {
         System.out.println("print");
         
     }
+    private void print2() {
+        System.out.println("print2");
+    }
 }
