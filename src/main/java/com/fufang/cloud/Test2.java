@@ -22,6 +22,9 @@ public class Test2 {
     private void print4() {
         System.out.println("4");
     }
-
-
+    
+    
+    private void print5() {
+        System.out.println("5");
+    }
 }
