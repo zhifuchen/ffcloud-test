@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fufang.cloud.mapper.mysql.WithdrawApplyMapper" >
+  <resultMap id="BaseResultMap" type="com.fufang.cloud.model.WithdrawApply" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="pharmacyId" property="pharmacyId" jdbcType="INTEGER" />
+    <result column="pharmacyType" property="pharmacyType" jdbcType="INTEGER" />
+    <result column="pharmacyName" property="pharmacyName" jdbcType="VARCHAR" />
+    <result column="accountId" property="accountId" jdbcType="VARCHAR" />
+    <result column="money" property="money" jdbcType="DECIMAL" />
+    <result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="createUserId" property="createUserId" jdbcType="VARCHAR" />
+    <result column="createUserName" property="createUserName" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="checkUserId" property="checkUserId" jdbcType="VARCHAR" />
+    <result column="checkUserName" property="checkUserName" jdbcType="VARCHAR" />
+    <result column="checkTime" property="checkTime" jdbcType="TIMESTAMP" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="remitNumber" property="remitNumber" jdbcType="VARCHAR" />
+    <result column="accountLogId" property="accountLogId" jdbcType="VARCHAR" />
+
+    <result column="accountName" property="accountName" jdbcType="VARCHAR" />
+    <result column="cardNo" property="cardNo" jdbcType="VARCHAR" />
+    <result column="bankSettleNo" property="bankSettleNo" jdbcType="VARCHAR" />
+    <result column="bankName" property="bankName" jdbcType="VARCHAR" />
+    <result column="bankProvince" property="bankProvince" jdbcType="VARCHAR" />
+    <result column="bankCity" property="bankCity" jdbcType="VARCHAR" />
+    <result column="detailedBankName" property="detailedBankName" jdbcType="VARCHAR" />
+    <result column="publicPrivate" property="publicPrivate" jdbcType="INTEGER" />
+    <result column="linkman" property="linkman" jdbcType="VARCHAR" />
+    <result column="phoneNo" property="phoneNo" jdbcType="VARCHAR" />
+    <result column="sort" property="sort" jdbcType="BIGINT" />
+  </resultMap>
+  <sql id="fields">
+    id, pharmacyId, pharmacyType,pharmacyName, accountId, money,createTime, createUserId, createUserName,status, checkUserId, checkUserName,
+      checkTime, remark,remitNumber,accountLogId,sort
+  </sql>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from t_withdraw_apply
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.fufang.cloud.model.WithdrawApply" >
+    insert into t_withdraw_apply (<include refid="fields"/> )
+    values (#{id,jdbcType=VARCHAR}, #{pharmacyId,jdbcType=INTEGER}, #{pharmacyType,jdbcType=INTEGER}, 
+      #{pharmacyName,jdbcType=VARCHAR}, #{accountId,jdbcType=VARCHAR}, #{money,jdbcType=DECIMAL}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{createUserId,jdbcType=VARCHAR}, #{createUserName,jdbcType=VARCHAR}, 
+      #{status,jdbcType=INTEGER}, #{checkUserId,jdbcType=VARCHAR}, #{checkUserName,jdbcType=VARCHAR}, 
+      #{checkTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR}, #{remitNumber,jdbcType=VARCHAR},
+      #{accountLogId,jdbcType=VARCHAR}, #{sort,jdbcType=BIGINT}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.fufang.cloud.model.WithdrawApply" >
+    update t_withdraw_apply
+    set pharmacyId = #{pharmacyId,jdbcType=INTEGER},
+      pharmacyType = #{pharmacyType,jdbcType=INTEGER},
+      pharmacyName = #{pharmacyName,jdbcType=VARCHAR},
+      accountId = #{accountId,jdbcType=VARCHAR},
+      money = #{money,jdbcType=DECIMAL},
+      createTime = #{createTime,jdbcType=TIMESTAMP},
+      createUserId = #{createUserId,jdbcType=VARCHAR},
+      createUserName = #{createUserName,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      checkUserId = #{checkUserId,jdbcType=VARCHAR},
+      checkUserName = #{checkUserName,jdbcType=VARCHAR},
+      checkTime = #{checkTime,jdbcType=TIMESTAMP},
+      remark = #{remark,jdbcType=VARCHAR},
+      remitNumber = #{remitNumber,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select <include refid="fields"/> from t_withdraw_apply where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="selectBySort" resultMap="BaseResultMap" >
+    select <include refid="fields"/> from t_withdraw_apply where sort = #{sort} limit 1
+  </select>
+  <select id="selectByAccount" resultMap="BaseResultMap" >
+    select <include refid="fields"/> from t_withdraw_apply where accountId = #{accountId} order by createTime asc limit 1
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select <include refid="fields"/> from t_withdraw_apply
+  </select>
+  <update id="updateStatus">
+    update t_withdraw_apply
+    set status = #{status},checkUserId = #{checkUserId},checkUserName = #{checkUserName},checkTime = #{checkTime},remark = #{remark},remitNumber = #{remitNumber}
+    where id = #{applyId}
+  </update>
+
+  <select id="selectList" resultMap="BaseResultMap">
+    select wa.*,ca.bankSettleNo,ca.accountName,ca.cardNo,ca.bankName,ca.bankProvince, ca.bankCity, ca.detailedBankName, ca.publicPrivate, ca.linkman, ca.phoneNo
+    from t_withdraw_apply wa INNER JOIN t_collection_account ca on wa.accountId = ca.id
+    <where>
+      ca.checkStatus = 1 and wa.status = 0
+      <if test="createTime != null">
+        and date(wa.createTime) = #{createTime}
+      </if>
+      <if test="pharmacyName != null and pharmacyName != ''">
+        AND (wa.pharmacyName LIKE concat('%',#{pharmacyName},'%') OR wa.pharmacyId LIKE concat('%',#{pharmacyName},'%'))
+      </if>
+    </where>
+    ORDER BY status,createTime desc
+  </select>
+  
+  <select id="selectListNoPage" resultMap="BaseResultMap">
+    select wa.*,ca.bankSettleNo,ca.accountName,ca.cardNo,ca.bankName,ca.bankProvince, ca.bankCity, ca.detailedBankName, ca.publicPrivate, ca.linkman, ca.phoneNo
+    from t_withdraw_apply wa INNER JOIN t_collection_account ca on wa.accountId = ca.id
+    <where>
+      ca.checkStatus = 1 and wa.status = 0
+      <if test="createTime != null">
+        and date(wa.createTime) = #{createTime}
+      </if>
+      <if test="pharmacyName != null and pharmacyName != ''">
+        AND (wa.pharmacyName LIKE concat('%',#{pharmacyName},'%') OR wa.pharmacyId LIKE concat('%',#{pharmacyName},'%'))
+      </if>
+    </where>
+    ORDER BY status,createTime desc
+    limit 10000
+  </select>
+  
+  <select id="checkingCount" resultType="Integer">
+  	select COUNT(*) from t_withdraw_apply where status = 0
+  </select>
+  
+  <select id="selectByAccountId" resultMap="BaseResultMap">
+  	select <include refid="fields"/> from t_withdraw_apply where accountId = #{accountId}
+  </select>
+
+  <update id="cancelByAccountId">
+      update t_withdraw_apply set status = 2,checkUserId = #{checkUserId},checkUserName = #{checkUserName},checkTime = #{checkTime},remark = #{remark} where accountId = #{accountId}
+  </update>
+
+  <select id="countMoney" resultType="DECIMAL">
+    select sum(wa.money) from t_withdraw_apply wa INNER JOIN t_collection_account ca on wa.accountId = ca.id where ca.checkStatus = 1 and wa.status = 0
+  </select>
+
+  <select id="countNumber" resultType="int">
+    select count(1) from t_withdraw_apply wa INNER JOIN t_collection_account ca on wa.accountId = ca.id where ca.checkStatus = 1 and wa.status = 0
+  </select>
+
+  <select id="getRemitNumber" resultType="string">
+    select remitNumber from t_withdraw_apply where accountLogId=#{accountLogId}
+  </select>
+  
+</mapper>

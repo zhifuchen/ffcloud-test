@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fufang.cloud.mapper.mysql_acc.AccountMapper" >
+  <resultMap id="BaseResultMap" type="com.fufang.cloud.model.Account" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="pharmacyId" property="pharmacyId" jdbcType="INTEGER" />
+    <result column="chainType" property="chainType" jdbcType="INTEGER" />
+    <result column="accountBalance" property="accountBalance" jdbcType="DECIMAL" />
+    <result column="accountStatus" property="accountStatus" jdbcType="INTEGER" />
+    <result column="createName" property="createName" jdbcType="VARCHAR" />
+    <result column="createDate" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="updateName" property="updateName" jdbcType="VARCHAR" />
+    <result column="updateDate" property="updateDate" jdbcType="TIMESTAMP" />
+    <result column="createUserId" property="createUserId" jdbcType="VARCHAR" />
+    <result column="updateUserId" property="updateUserId" jdbcType="VARCHAR" />
+  </resultMap>
+  <insert id="insert" parameterType="com.fufang.cloud.model.Account" >
+    insert into t_account (id, pharmacyId, chainType, 
+      accountBalance, accountStatus, createName, 
+      createDate, updateName, updateDate,createUserId,updateUserId
+      )
+    values (#{id,jdbcType=VARCHAR}, #{pharmacyId,jdbcType=INTEGER}, #{chainType,jdbcType=INTEGER}, 
+      #{accountBalance,jdbcType=DECIMAL}, #{accountStatus,jdbcType=INTEGER}, #{createName,jdbcType=VARCHAR}, 
+      #{createDate,jdbcType=TIMESTAMP}, #{updateName,jdbcType=VARCHAR}, #{updateDate,jdbcType=TIMESTAMP},
+      #{createUserId,jdbcType=TIMESTAMP}, #{updateUserId,jdbcType=VARCHAR}
+      )
+  </insert>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select id, pharmacyId, chainType, accountBalance, accountStatus, createName, createDate, 
+    updateName, updateDate,createUserId,updateUserId
+    from t_account
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, pharmacyId, chainType, accountBalance, accountStatus, createName, createDate, 
+    updateName, updateDate,createUserId,updateUserId
+    from t_account
+  </select>
+  <select id="getAccountByPharmacyId" resultMap="BaseResultMap">
+      <![CDATA[select id, pharmacyId, chainType, accountBalance, accountStatus, createName, createDate, 
+    	updateName, updateDate,createUserId,updateUserId from t_account]]>
+      <trim prefix="where" prefixOverrides="and">
+          <if test="#{0} != null">
+              <![CDATA[ and pharmacyId = #{0}]]>
+          </if>
+           <if test="#{1} != null">
+              <![CDATA[ and chainType = #{1}]]>
+          </if>
+      </trim>
+  </select>
+  <update id="updateAccount" parameterType="com.fufang.cloud.model.Account">
+      update t_account set accountBalance = #{accountBalance},updateDate = #{updateDate},updateName = #{updateName}
+      <if test="updateUserId != null and updateUserId != '' ">
+      	,updateUserId=#{updateUserId} 
+      </if>  
+      where id = #{id}
+  </update>
+  <select id="queryAccountInfo" parameterType="java.util.Map" resultType="java.util.Map">
+      <![CDATA[select accountBalance,chainType from t_account ]]>
+      <trim prefix="where" prefixOverrides="and">
+          <if test="pharmacyId != null">
+              <![CDATA[ and pharmacyId = #{pharmacyId} ]]>
+          </if>
+          <if test="chainType != null">
+              <![CDATA[ and chainType = #{chainType} ]]>
+          </if>
+      </trim>
+  </select>
+</mapper>

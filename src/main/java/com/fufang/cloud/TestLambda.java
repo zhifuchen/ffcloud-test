@@ -22,10 +22,10 @@ public class TestLambda {
 //        }
 
         // 使用 lambda 表达式以及函数操作(functional operation)
-        players.forEach((player)-> {System.out.println(player + ";");
-            System.out.println(333);});
-        Arrays.sort(atp, (String s1, String s2) -> (s1.compareTo(s2)));
-        new TestLambda().print((s) -> System.out.println(s));
+//        players.forEach((player)-> {System.out.println(player + ";");
+//            System.out.println(333);});
+//        Arrays.sort(atp, (String s1, String s2) -> (s1.compareTo(s2)));
+//        new TestLambda().print((s) -> System.out.println(s));
         
     }
     
