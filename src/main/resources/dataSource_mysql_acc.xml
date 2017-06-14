@@ -1,33 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	   xmlns:tx="http://www.springframework.org/schema/tx"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans
-       http://www.springframework.org/schema/beans/spring-beans.xsd
-
-
-       http://www.springframework.org/schema/tx
-	   http://www.springframework.org/schema/tx/spring-tx.xsd">
-	
-	<!-- 使用annotation定义事务 -->
-	<tx:annotation-driven transaction-manager="transactionManager_mysql_acc"
-		proxy-target-class="true" />
+       http://www.springframework.org/schema/beans/spring-beans.xsd">
 		
 	<!-- jndi数据源 -->
-	<bean id="dataSource_mysql_acc" class="org.springframework.jndi.JndiObjectFactoryBean">
-		<property name="jndiName" value="java:comp/env/jdbc/remoterecipel" />
+	<!--<bean id="dataSource_mysql_acc" class="org.springframework.jndi.JndiObjectFactoryBean" scope="singleton">
+		<property name="jndiName">
+			<value>dataSource_mysql_acc</value>
+		</property>
+		<property name="resourceRef" value="true"/>
+	</bean>-->
+	
+	<bean id="dataSource_mysql_acc" class="com.atomikos.jdbc.AtomikosDataSourceBean"
+		  init-method="init" destroy-method="close">
+		<property name="uniqueResourceName" value="dataSource_mysql_acc" />
+		<property name="xaDataSourceClassName" value="${jdbc.xaDataSourceClassName}" />
+		<property name="xaProperties">
+			<props>
+				<prop key="user">${jdbc.mysql.username}</prop>
+				<prop key="password">${jdbc.mysql.password}</prop>
+				<prop key="url">${jdbc.mysql.url}</prop>
+			</props>
+		</property>
+		<property name="minPoolSize" value="${atomikos.minPoolSize}" />
+		<property name="maxPoolSize" value="${atomikos.maxPoolSize}" />
+		<property name="maxIdleTime" value="${atomikos.maxIdleTime}" />
 	</bean>
-
+	
 	<!--MyBatis 配置 -->
 	<bean id="sqlSessionFactory_mysql_acc" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="dataSource_mysql_acc" />
 		<property name="configLocation" value="classpath:mybatis_mySql.xml" />
-	</bean>
-
-	<!-- jdbc/mybatis 事务操作 -->
-	<bean id="transactionManager_mysql_acc"
-		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-		<property name="dataSource" ref="dataSource_mysql_acc" />
 	</bean>
 	
 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
