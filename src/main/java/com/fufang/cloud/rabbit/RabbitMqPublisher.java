@@ -8,6 +8,7 @@ import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.support.CorrelationData;
+import org.springframework.retry.support.RetryTemplate;
 
 /**
  * Created by zhifu.chen on 2017/6/14.
@@ -26,9 +27,9 @@ public class RabbitMqPublisher {
         TopicExchange exchange = new TopicExchange("myExchange");
         admin.declareExchange(exchange);
         admin.declareBinding(BindingBuilder.bind(queue).to(exchange).with("foo.*"));
-    
+        
         // send something
-        RabbitTemplate template = new RabbitTemplate(cf);
+        RabbitTemplate template = admin.getRabbitTemplate();
         template.setMandatory(true);
         /**
          * confirm 主要是用来判断消息是否有正确到达交换机，如果有，那么就 ack 就返回 true；如果没有，则是 false。
@@ -49,6 +50,7 @@ public class RabbitMqPublisher {
                 System.out.println("return--message:"+new String(message.getBody())+",replyCode:"+replyCode+",replyText:"+replyText+",exchange:"+exchange+",routingKey:"+routingKey);
             }
         });
+        template.setRetryTemplate(new RetryTemplate());
         template.convertAndSend("myExchange", "foo.bar", "Hello, world!");
     }
 }

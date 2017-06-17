@@ -43,5 +43,6 @@ public class RabbitMqConsumer {
         });
         container.setQueueNames("myQueue");
         container.start();
+//        container.stop();
     }
 }
