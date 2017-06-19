@@ -38,6 +38,5 @@ public class WithdrawApplyServiceImpl implements IWithdrawApplyService {
         account.setPharmacyId(2);
         account.setCreateDate(createTime);
         accountMapper.insert(account);
-        throw new RuntimeException();
     }
 }
