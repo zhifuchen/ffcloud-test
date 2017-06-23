@@ -8,7 +8,6 @@ import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.support.CorrelationData;
-import org.springframework.retry.support.RetryTemplate;
 
 /**
  * Created by zhifu.chen on 2017/6/14.
@@ -50,7 +49,6 @@ public class RabbitMqPublisher {
                 System.out.println("return--message:"+new String(message.getBody())+",replyCode:"+replyCode+",replyText:"+replyText+",exchange:"+exchange+",routingKey:"+routingKey);
             }
         });
-        template.setRetryTemplate(new RetryTemplate());
         template.convertAndSend("myExchange", "foo.bar", "Hello, world!");
     }
 }

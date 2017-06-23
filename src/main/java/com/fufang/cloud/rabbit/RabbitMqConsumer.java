@@ -1,7 +1,10 @@
 package com.fufang.cloud.rabbit;
 
 import com.rabbitmq.client.Channel;
-import org.springframework.amqp.core.*;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.ChannelAwareMessageListener;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
@@ -27,18 +30,16 @@ public class RabbitMqConsumer {
         
         // set up the listener and container
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(cf);
-        //手动确认
-        container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
+        //设置为手动确认模式
+//        container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
         container.setMessageListener(new ChannelAwareMessageListener() {
             @Override
-            public void onMessage(Message message, Channel channel) throws Exception {
-                try {
+            public void onMessage(Message message, Channel channel){
                     System.out.println("consumer--:" + message.getMessageProperties() + ":" + new String(message.getBody()));
-                    channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, false);
-                }
+//                    throw new AmqpRejectAndDontRequeueException("抛弃");
+                    throw new RuntimeException("重新入队,无限重试");
+//                    channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);//手动确认
+            
             }
         });
         container.setQueueNames("myQueue");
