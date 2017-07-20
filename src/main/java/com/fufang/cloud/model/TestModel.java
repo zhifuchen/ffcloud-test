@@ -1,17 +1,10 @@
 package com.fufang.cloud.model;
 
-public class Bank {
-    private String id;
-
+/**
+ * Created by chenzhifu on 2017/7/20.
+ */
+public class TestModel {
     private String name;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;

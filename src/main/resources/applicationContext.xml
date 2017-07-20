@@ -60,10 +60,10 @@
 	</bean>
 
 	<!-- mysql数据源 -->
+<!--
 	<import resource="classpath:dataSource_mysql.xml" />
-	<!-- mysql数据源 -->
-	<import resource="classpath:dataSource_mysql_acc.xml" />
-	
+-->
+
 	<bean id="atomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager"
 		  init-method="init" destroy-method="close">
 		<property name="forceShutdown">
@@ -86,53 +86,4 @@
 		<property name="allowCustomIsolationLevels" value="true"/>
 	</bean>
 	<tx:annotation-driven transaction-manager="springTransactionManager" proxy-target-class="true"/>
-	
-	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
-		<property name="maxTotal" value="200" />
-		<property name="maxIdle" value="10" />
-	</bean>
-
-	<bean id="sentinelConfig"
-		class="org.springframework.data.redis.connection.RedisSentinelConfiguration">
-		<property name="master">
-			<bean class="org.springframework.data.redis.connection.RedisNode">
-				<property name="name" value="${redis.master}"></property>
-			</bean>
-		</property>
-		<property name="sentinels">
-			<set>
-				<bean class="org.springframework.data.redis.connection.RedisNode">
-					<constructor-arg name="host" value="${sentinel1.ip}"></constructor-arg>
-					<constructor-arg name="port" value="${sentinel1.port}"></constructor-arg>
-				</bean>
-				<bean class="org.springframework.data.redis.connection.RedisNode">
-					<constructor-arg name="host" value="${sentinel2.ip}"></constructor-arg>
-					<constructor-arg name="port" value="${sentinel2.port}"></constructor-arg>
-				</bean>
-				<bean class="org.springframework.data.redis.connection.RedisNode">
-					<constructor-arg name="host" value="${sentinel3.ip}"></constructor-arg>
-					<constructor-arg name="port" value="${sentinel3.port}"></constructor-arg>
-				</bean>
-			</set>
-		</property>
-	</bean>
-
-	<bean id="jedisConnFactory"
-		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
-		p:database="13" p:use-pool="true" p:timeout="60000" p:password="${redis.password}">
-		<constructor-arg name="sentinelConfig" ref="sentinelConfig" />
-		<constructor-arg name="poolConfig" ref="jedisPoolConfig" />
-	</bean>
-
-	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate"
-		p:connection-factory-ref="jedisConnFactory">
-		<property name="defaultSerializer">
-			<bean
-				class="org.springframework.data.redis.serializer.StringRedisSerializer" />
-		</property>
-		<property name="keySerializer">
-			<bean
-				class="org.springframework.data.redis.serializer.StringRedisSerializer" />
-		</property>
-	</bean>
 </beans>
